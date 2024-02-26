@@ -1,90 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Grid, Typography } from '@mui/material';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'; 
-import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
-import HistoryIcon from '@mui/icons-material/History';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
-import CaptionedImage from '.js/components/CaptionedImage';
+import CaptionedImage from './components/CaptionedImage';
+import Loading from './components/Loading';
+import Menu from './components/Menu';
+import fetchImageCaption from './APIHelpers'
+import { decode } from "base64-arraybuffer";
+import useSQLiteDB from './useSQLiteDB';
+import CaptionHistory from './components/CaptionHistory';
 
 const App: React.FC = () => {
 
-    const [selectedImageUri, setSelectedImageUri] = useState<string>('');
+    interface ImageCaption {
+        image: '';
+        caption: '';
+    }
 
-    const handleImageCaptioning = () => {
-        Camera.getPhoto({
-            quality: 90,
-            allowEditing: false,
-            resultType: CameraResultType.Uri,
-            source: CameraSource.Camera
-        }).then(image => {
-            console.log('Captured image:', image.webPath);
-        }).catch(error => {
-            console.error('Error capturing photo:', error);
-        });
+    const [selectedImageCaption, setSelectedImageCaption] = useState<ImageCaption>({caption:'',image:''} as ImageCaption);
+    const [isCaptioning, setIsCaptioning] = useState(false);
+    const [checkingHistory, setCheckingHistory] = useState(false);
+    const { performSQLAction } = useSQLiteDB();
+
+    const handleImageCaptioning = async (selectedImage) => {
+        setIsCaptioning(true); 
+        try {
+            const result = await fetchImageCaption(selectedImage);
+            return result;
+        } catch (error) {
+            console.error('Error captioning image:', error);
+            setIsCaptioning(false);
+            setSelectedImageCaption({} as ImageCaption);
+        }
     };
 
-    const handleImageUpload = () => {
-        Camera.getPhoto({
+    const handleImageCapture = async () => {
+        const image = await Camera.getPhoto({
             quality: 90,
             allowEditing: false,
-            resultType: CameraResultType.Uri,
-            source: CameraSource.Photos
-        }).then(image => {
-            console.log('Uploaded image:', image.webPath);
-        }).catch(error => {
-            console.error('Error getting photo:', error);
+            resultType: CameraResultType.Base64,
+            source: CameraSource.Camera
+        })
+        const blob = new Blob([new Uint8Array(decode(image.base64String))], {
+            type: `image/${image.format}`,
         });
+        const result = await handleImageCaptioning(blob);
+        await performSQLAction(async (db) => {
+            await db?.query(`INSERT INTO pastCaptions(caption, image, format) VALUES('${result[0]['generated_text']}', '${image.base64String}', '${image.format}');`);
+        }, null);
+        await setSelectedImageCaption({ caption: result[0]['generated_text'], image: URL.createObjectURL(blob) }); 
+
+    };
+
+    const handleImageUpload = async () => {
+        const image = await Camera.getPhoto({
+            quality: 90,
+            allowEditing: false,
+            resultType: CameraResultType.Base64,
+            source: CameraSource.Photos
+        })
+        const blob = new Blob([new Uint8Array(decode(image.base64String))], {
+            type: `image/${image.format}`,
+        });
+        const result = await handleImageCaptioning(blob); 
+        await performSQLAction(async (db) => {
+            await db?.query(`INSERT INTO pastCaptions(caption, image, format) VALUES('${result[0]['generated_text']}', '${image.base64String}','${image.format}');`);
+        }, null);
+        await setSelectedImageCaption({ caption: result[0]['generated_text'], image: URL.createObjectURL(blob) }); 
     };
 
     const handleCheckCaptions = () => {
+        console.log(1)
+        setCheckingHistory(true);
+    };
+
+    const handleClose = async () => {
+        await setSelectedImageCaption({ caption: '', image: '' } as ImageCaption);
+        await setIsCaptioning(false);
+        await setCheckingHistory(false);
     };
 
     return (
         <Container maxWidth="sm">
-            <Grid
-                container
-                spacing={2}
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                style={{ minHeight: '100vh' }}
-            >
-                <Grid item>
-                    <Typography variant="h4" align="center" gutterBottom>
-                        Welcome :)
-                    </Typography>
-                </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<PhotoCameraIcon/>} 
-                        onClick={handleImageCaptioning}
-                    >
-                        Caption with Camera
-                    </Button>
-                </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<PhotoLibraryIcon/>} 
-                        onClick={handleImageUpload}
-                    >
-                        Caption from Gallery
-                    </Button>
-                </Grid>
-                <Grid item>
-                    <Button
-                        variant="contained"
-                        color="secondary" 
-                        startIcon={<HistoryIcon/>} 
-                        onClick={handleCheckCaptions}
-                    >
-                        Check Previous Captions
-                    </Button>
-                </Grid>
-            </Grid>
+            {!isCaptioning && !checkingHistory ?
+                <Menu handleImageCaptioning={handleImageCapture} handleImageUpload={handleImageUpload} handleCheckCaptions={handleCheckCaptions} />
+                :
+                (!isCaptioning && checkingHistory) ? <CaptionHistory onClose={handleClose} performSQLAction={performSQLAction} /> : null
+            }
+            {isCaptioning && selectedImageCaption.caption === '' && <Loading />}
+            {isCaptioning && selectedImageCaption.caption !== '' && <CaptionedImage onClose={handleClose} imageCaption={selectedImageCaption} />}
         </Container>
     );
 };

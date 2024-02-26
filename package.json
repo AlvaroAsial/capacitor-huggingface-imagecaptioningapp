@@ -22,6 +22,7 @@
     "build": "cross-env NODE_ENV=production vite build"
   },
   "dependencies": {
+    "@capacitor-community/sqlite": "^5.6.1-2",
     "@capacitor/android": "5.5.1",
     "@capacitor/camera": "^5.0.9",
     "@capacitor/core": "5.5.1",
@@ -31,6 +32,8 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.11",
     "@mui/material": "^5.15.11",
+    "@mui/styles": "^5.15.11",
+    "base64-arraybuffer": "^1.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
