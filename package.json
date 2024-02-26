@@ -19,7 +19,7 @@
     "monaca:trapeze-ios": "trapeze run config.yaml -y --ios-project ios/App",
     "dev": "cross-env NODE_ENV=development vite",
     "watch": "cross-env NODE_ENV=development vite build --watch",
-    "build": "cross-env NODE_ENV=production vite build"
+    "build": "cross-env NODE_ENV=production vite build && yarn monaca:trapeze-android && yarn monaca:trapeze-ios"
   },
   "dependencies": {
     "@capacitor-community/sqlite": "^5.6.1-2",
