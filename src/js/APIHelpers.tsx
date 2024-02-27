@@ -10,6 +10,9 @@ const fetchImageCaption = async (imageUri) => {
                 body: imageUri,
             }
         );
+        if (response.status !== 200) {
+            throw "Incorrect request."
+        }
         const result = await response.json();
         return result;
     } catch (error) {

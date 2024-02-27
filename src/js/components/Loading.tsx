@@ -12,9 +12,11 @@ const Loading: React.FC = () => {
                 alignItems="center"
                 style={{ minHeight: '100vh' }}
             >
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'block' }}>
                 <CircularProgress color="secondary" />
             </Box>
+            <br></br>
+            <h2>Loading...</h2>
         </Grid>
     );
 };

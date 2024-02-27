@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Container, Grid, Typography } from '@mui/material';
-import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import React, { useState } from 'react';
+import { Container, Modal, Box, Typography } from '@mui/material';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import CaptionedImage from './components/CaptionedImage';
 import Loading from './components/Loading';
 import Menu from './components/Menu';
@@ -19,6 +19,7 @@ const App: React.FC = () => {
     const [selectedImageCaption, setSelectedImageCaption] = useState<ImageCaption>({caption:'',image:''} as ImageCaption);
     const [isCaptioning, setIsCaptioning] = useState(false);
     const [checkingHistory, setCheckingHistory] = useState(false);
+    const [error, setError] = useState(false);
     const { performSQLAction } = useSQLiteDB();
 
     const handleImageCaptioning = async (selectedImage) => {
@@ -28,8 +29,7 @@ const App: React.FC = () => {
             return result;
         } catch (error) {
             console.error('Error captioning image:', error);
-            setIsCaptioning(false);
-            setSelectedImageCaption({} as ImageCaption);
+            setError(true);
         }
     };
 
@@ -69,7 +69,6 @@ const App: React.FC = () => {
     };
 
     const handleCheckCaptions = () => {
-        console.log(1)
         setCheckingHistory(true);
     };
 
@@ -77,6 +76,7 @@ const App: React.FC = () => {
         await setSelectedImageCaption({ caption: '', image: '' } as ImageCaption);
         await setIsCaptioning(false);
         await setCheckingHistory(false);
+        await setError(false);
     };
 
     return (
@@ -88,6 +88,19 @@ const App: React.FC = () => {
             }
             {isCaptioning && selectedImageCaption.caption === '' && <Loading />}
             {isCaptioning && selectedImageCaption.caption !== '' && <CaptionedImage onClose={handleClose} imageCaption={selectedImageCaption} />}
+            <Modal
+                open={error}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+                <Box sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
+                    <Typography variant="subtitle1" align="center" style={{ marginTop: '16px', color: '#616161' }}>
+                        Error captioning image, the API might not be available. Please try again later.
+                    </Typography>
+                </Box>
+            </Modal>
         </Container>
     );
 };

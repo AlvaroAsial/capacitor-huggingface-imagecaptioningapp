@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Typography, Button } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const CaptionedImage = ({ imageCaption, onClose }) => {

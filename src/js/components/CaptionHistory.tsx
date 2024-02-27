@@ -9,12 +9,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import Loading from './Loading';
 
 const CaptionHistory = ({ performSQLAction, onClose }) => {
 
     const [data, setData] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
     const [confirm, setConfirm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleImageClick = (image) => {
         setSelectedImage(image);
@@ -24,7 +26,7 @@ const CaptionHistory = ({ performSQLAction, onClose }) => {
         setSelectedImage(null);
     };
 
-    const deleteCaptions = () => {
+    const deleteCaptions = async () => {
         const deleteData = async () => {
             await performSQLAction(async (db: SQLiteConnection | null) => {
                 await db?.query(`DELETE FROM pastCaptions`);
@@ -32,11 +34,12 @@ const CaptionHistory = ({ performSQLAction, onClose }) => {
             });
         }
         setConfirm(false);
-        deleteData();
-        loadData();       
+        await deleteData();
+        await loadData();       
     };
 
     const loadData = async () => {
+        setIsLoading(true);
         await performSQLAction(async (db: SQLiteConnection | null) => {
             const jsonData = JSON.parse(JSON.stringify(await db?.query(`SELECT * FROM pastCaptions`)));
             const parsedData = jsonData.values.map(item => ({
@@ -45,9 +48,9 @@ const CaptionHistory = ({ performSQLAction, onClose }) => {
                     type: `image/${item.format}`,
                 }))
             }));
-            console.log(jsonData.values)
             setData(parsedData.reverse())
         });
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -82,64 +85,67 @@ const CaptionHistory = ({ performSQLAction, onClose }) => {
                     </Toolbar>
                 </AppBar>
             </Box>
-            {data.length === 0 ? <h2 style={{ paddingTop: '10px' }} >No previous captions...</h2> :
-                <Grid container spacing={2} justifyContent="center" alignItems="flex-start" style={{ paddingTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}>
-                    {data.map((item, index) => (
-                        <Grid item key={index} xs={6} style={{ display: 'flex', justifyContent: 'center' }}>
-                            <div
-                                onClick={() => handleImageClick(item)}
-                                className='gridImageContainer'
-                            >
+            {isLoading ? <Loading /> : <div>
+                {data.length === 0 ? <h2 style={{ paddingTop: '10px' }} >No previous captions...</h2> : <div>
+                    <h2 style={{ paddingTop: '10px' }}>Caption History:</h2>
+                    <Grid container spacing={2} justifyContent="center" alignItems="flex-start" style={{ paddingTop: '10px', paddingLeft: '10px', paddingRight: '10px' }}>
+                        {data.map((item, index) => (
+                            <Grid item key={index} xs={6} style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div
+                                    onClick={() => handleImageClick(item)}
+                                    className='gridImageContainer'
+                                >
+                                    <img
+                                        src={item.image}
+                                        className='gridImage'
+                                        alt={`Captioned Image ${index}`}
+                                    />
+                                </div>
+                            </Grid>
+                        ))}
+                    </Grid></div>}
+                <Modal
+                    open={Boolean(selectedImage)}
+                    onClose={handleCloseModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                    <Box sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
+                        {selectedImage && (
+                            <>
                                 <img
-                                    src={item.image}
-                                    className='gridImage'
-                                    alt={`Captioned Image ${index}`}
+                                    src={selectedImage.image}
+                                    alt={`Selected Image`}
+                                    style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: '40px' }}
                                 />
-                            </div>
-                        </Grid>
-                    ))}
-                </Grid> }
-            <Modal
-                open={Boolean(selectedImage)}
-                onClose={handleCloseModal}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-                <Box sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
-                    {selectedImage && (
-                        <>
-                            <img
-                                src={selectedImage.image}
-                                alt={`Selected Image`}
-                                style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: '40px' }}
-                            />
-                            <Typography variant="subtitle1" align="center" style={{ marginTop: '16px', color: '#616161' }}>
-                                {selectedImage.caption}
-                            </Typography>
-                        </>
-                    )}
-                </Box>
-            </Modal>
-            <Dialog
-                open={confirm}
-                onClose={() => null}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Deleting Caption History..."}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setConfirm(false)}>Cancel</Button>
-                    <Button onClick={deleteCaptions} autoFocus>Confirm</Button>
-                </DialogActions>
-            </Dialog>
+                                <Typography variant="subtitle1" align="center" style={{ marginTop: '16px', color: '#616161' }}>
+                                    {selectedImage.caption}
+                                </Typography>
+                            </>
+                        )}
+                    </Box>
+                </Modal>
+                <Dialog
+                    open={confirm}
+                    onClose={() => null}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Deleting Caption History..."}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Are you sure?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setConfirm(false)}>Cancel</Button>
+                        <Button onClick={deleteCaptions} autoFocus>Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>}
         </div>
     );
 };
