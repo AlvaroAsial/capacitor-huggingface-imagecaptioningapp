@@ -1,4 +1,4 @@
-# Japanese Learning App
+# Image Captioning App
 
 App that provides a clean and fast interface to get captions for images, both of device's camera and gallery. Additionally, the user can navigate and manage previous captioned images, through a dedicted caption history screen.
 
