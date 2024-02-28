@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { JeepSqlite } from "jeep-sqlite/dist/components/jeep-sqlite";
+import { DarkModeProvider } from './components/DarkModeContext';
 
 window.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -18,7 +19,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(
-            <App/>
+            <DarkModeProvider>
+                <App/>
+            </DarkModeProvider>  
         );
     } catch (e) {
         console.log(e);

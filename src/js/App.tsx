@@ -8,6 +8,8 @@ import fetchImageCaption from './APIHelpers'
 import { decode } from "base64-arraybuffer";
 import useSQLiteDB from './useSQLiteDB';
 import CaptionHistory from './components/CaptionHistory';
+import { useDarkMode } from './components/DarkModeContext'
+
 
 const App: React.FC = () => {
 
@@ -21,6 +23,7 @@ const App: React.FC = () => {
     const [checkingHistory, setCheckingHistory] = useState(false);
     const [error, setError] = useState(false);
     const { performSQLAction } = useSQLiteDB();
+    const { darkMode, toggleDarkMode } = useDarkMode();  
 
     const handleImageCaptioning = async (selectedImage) => {
         setIsCaptioning(true); 
@@ -80,7 +83,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="sm">
+        <Container className={darkMode ? 'app-container dark' : 'app-container light'}>
             {!isCaptioning && !checkingHistory ?
                 <Menu handleImageCaptioning={handleImageCapture} handleImageUpload={handleImageUpload} handleCheckCaptions={handleCheckCaptions} />
                 :
