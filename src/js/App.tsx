@@ -18,17 +18,18 @@ const App: React.FC = () => {
         caption: '';
     }
 
-    const [selectedImageCaption, setSelectedImageCaption] = useState<ImageCaption>({caption:'',image:''} as ImageCaption);
+    const [selectedImageCaption, setSelectedImageCaption] = useState<ImageCaption>({ caption: '', image: '' } as ImageCaption);
+    const [model, setModel] = useState<string>('https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large');  
     const [isCaptioning, setIsCaptioning] = useState(false);
     const [checkingHistory, setCheckingHistory] = useState(false);
     const [error, setError] = useState(false);
     const { performSQLAction } = useSQLiteDB();
-    const { darkMode, toggleDarkMode } = useDarkMode();  
+    const { darkMode } = useDarkMode();  
 
     const handleImageCaptioning = async (selectedImage) => {
         setIsCaptioning(true); 
         try {
-            const result = await fetchImageCaption(selectedImage);
+            const result = await fetchImageCaption(selectedImage,model);
             return result;
         } catch (error) {
             console.error('Error captioning image:', error);
@@ -85,7 +86,7 @@ const App: React.FC = () => {
     return (
         <Container className={darkMode ? 'app-container dark' : 'app-container light'}>
             {!isCaptioning && !checkingHistory ?
-                <Menu handleImageCaptioning={handleImageCapture} handleImageUpload={handleImageUpload} handleCheckCaptions={handleCheckCaptions} />
+                <Menu handleImageCaptioning={handleImageCapture} handleImageUpload={handleImageUpload} handleCheckCaptions={handleCheckCaptions} setModel={setModel} model={model} />
                 :
                 (!isCaptioning && checkingHistory) ? <CaptionHistory onClose={handleClose} performSQLAction={performSQLAction} /> : null
             }
@@ -100,7 +101,7 @@ const App: React.FC = () => {
             >
                 <Box sx={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px' }}>
                     <Typography variant="subtitle1" align="center" style={{ marginTop: '16px', color: '#616161' }}>
-                        Error captioning image, the API might not be available. Please try again later.
+                        Error captioning image, the API might not be available. Please try again later or select another model.
                     </Typography>
                 </Box>
             </Modal>

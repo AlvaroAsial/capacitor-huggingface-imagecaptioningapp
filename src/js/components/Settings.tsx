@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDarkMode } from './DarkModeContext';
-import { FormGroup, FormControlLabel, Grid, Switch, FormControl, InputLabel, NativeSelect} from '@mui/material';
+import { FormGroup, FormControlLabel, Grid, Switch, FormControl, InputLabel, NativeSelect } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 
-const Settings: React.FC = () => {
+const Settings: React.FC = ({setModel,model}) => {
 
-    const [model, setModel] = useState('Salesforce BLIP - Large');
     const { darkMode, toggleDarkMode } = useDarkMode();  
 
-    const handleModel = () => {
-
-    }
+    const handleChangeModel = (event: SelectChangeEvent) => {
+        setModel(event.target.value);
+    };
 
     return (
         <Grid
@@ -33,8 +33,11 @@ const Settings: React.FC = () => {
                             name: 'model',
                             id: 'uncontrolled-native',
                         }}
+                        onChange={handleChangeModel}
                     >
-                        <option value={'Salesforce BLIP - Large'} className={darkMode ? 'dark' : 'light'} >'Salesforce BLIP - Large'</option>
+                        <option value={"https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large"} className={darkMode ? 'dark' : 'light'} >'Salesforce BLIP - Large'</option>
+                        <option value={"https://api-inference.huggingface.co/models/nlpconnect/vit-gpt2-image-captioning"} className={darkMode ? 'dark' : 'light'} >'NLPCONNECT Vit-gpt2-image-captioning'</option>
+                        <option value={"https://api-inference.huggingface.co/models/microsoft/git-base"} className={darkMode ? 'dark' : 'light'} >'GIT (GenerativeImage2Text), base-sized'</option>
                     </NativeSelect>
                 </FormControl>
             </FormGroup>

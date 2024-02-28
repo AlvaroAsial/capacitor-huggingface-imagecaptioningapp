@@ -7,7 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import HomeIcon from '@mui/icons-material/Home';
 import Settings from './Settings';
 
-const Menu: React.FC = ({ handleImageCaptioning, handleImageUpload, handleCheckCaptions }) => {
+const Menu: React.FC = ({ handleImageCaptioning, handleImageUpload, handleCheckCaptions, setModel, model }) => {
 
     const [value, setValue] = useState('Home');
 
@@ -56,7 +56,7 @@ const Menu: React.FC = ({ handleImageCaptioning, handleImageUpload, handleCheckC
                         </Button>
                     </Grid>
             </Grid>}
-            {value === 'Settings' && <Settings/> }
+        {value === 'Settings' && <Settings setModel={setModel} model={model} /> }
             <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
                 <BottomNavigation
                     showLabels

@@ -1,9 +1,9 @@
 const API_TOKEN = '';
 
-const fetchImageCaption = async (imageUri) => {
+const fetchImageCaption = async (imageUri, model) => {
     try {
         const response = await fetch(
-            "https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large",
+            model,
             {
                 headers: { Authorization: `Bearer ${API_TOKEN}` },
                 method: "POST",
