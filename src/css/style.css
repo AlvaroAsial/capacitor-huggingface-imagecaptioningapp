@@ -37,11 +37,6 @@ html {
     overflow: hidden;
 }
 
-.css-cuefkz-MuiContainer-root, .css-1oqqzyl-MuiContainer-root {
-    padding-left: 0px !important;
-    padding-right: 0px !important;
-}
-
 h2 {
     text-align:center;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

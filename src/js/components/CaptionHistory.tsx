@@ -58,26 +58,24 @@ const CaptionHistory = ({ performSQLAction, onClose }) => {
     }, []);
 
     return (
-        <div style={{ height: '100vh', overflowY: 'scroll' }}>
+        <div style={{ height: '100vh', overflowY: 'scroll', width:'100%' }}>
             <Box sx={{ flexGrow: 1 }} className="toolbar">
-                <AppBar position="static" sx={{ bgcolor: '#333333' }}>
-                    <Toolbar>
+                <AppBar position="static" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Toolbar sx={{ justifyContent: 'space-between' }}>
                         <IconButton
                             size="large"
                             edge="start"
                             color="inherit"
                             aria-label="menu"
-                            sx={{ mr: 2 }}
                             onClick={onClose}
                         >
                             <CloseIcon />
                         </IconButton>
                         <IconButton
                             size="large"
-                            edge="start"
+                            edge="end"
                             color="inherit"
                             aria-label="open drawer"
-                            sx={{ mr: 2 }}
                             onClick={() => setConfirm(true)}
                         >
                             <DeleteIcon />

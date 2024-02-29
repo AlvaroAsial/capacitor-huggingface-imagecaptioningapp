@@ -84,7 +84,7 @@ const App: React.FC = () => {
     };
 
     return (
-        <Container className={darkMode ? 'app-container dark' : 'app-container light'}>
+        <div className={darkMode ? 'app-container dark' : 'app-container light'}>
             {!isCaptioning && !checkingHistory ?
                 <Menu handleImageCaptioning={handleImageCapture} handleImageUpload={handleImageUpload} handleCheckCaptions={handleCheckCaptions} setModel={setModel} model={model} />
                 :
@@ -105,7 +105,7 @@ const App: React.FC = () => {
                     </Typography>
                 </Box>
             </Modal>
-        </Container>
+        </div>
     );
 };
 

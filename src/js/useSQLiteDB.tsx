@@ -37,11 +37,6 @@ const useSQLiteDB = () => {
     }, []);
 
     const initializeTables = async () => {
-        /*await performSQLAction(async (db: SQLiteConnection | null) => {
-            const queryCreateTable = `
-            DROP TABLE IF EXISTS pastCaptions;`;
-            await db?.execute(queryCreateTable);
-        });*/
         await performSQLAction(async (db: SQLiteConnection | null) => { 
             const queryCreateTable = `
             CREATE TABLE IF NOT EXISTS pastCaptions (
