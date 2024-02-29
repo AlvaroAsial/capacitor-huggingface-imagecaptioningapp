@@ -1,4 +1,4 @@
-const API_TOKEN = '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';
+const API_TOKEN = '';
 
 const fetchImageCaption = async (imageUri, model) => {
     try {
