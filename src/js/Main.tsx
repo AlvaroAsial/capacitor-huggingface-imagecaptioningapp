@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
+import App from "@/App.tsx";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { JeepSqlite } from "jeep-sqlite/dist/components/jeep-sqlite";
-import { DarkModeProvider } from './components/DarkModeContext';
+import { DarkModeProvider } from '@/components/DarkModeContext';
 
 window.addEventListener("DOMContentLoaded", async () => {
     try {

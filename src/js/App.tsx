@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Container, Modal, Box, Typography } from '@mui/material';
+import { Modal, Box, Typography } from '@mui/material';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import CaptionedImage from './components/CaptionedImage';
-import Loading from './components/Loading';
-import Menu from './components/Menu';
-import fetchImageCaption from './APIHelpers'
+import CaptionedImage from '@/components/CaptionedImage';
+import Loading from '@/components/Loading';
+import Menu from '@/components/Menu';
+import fetchImageCaption from '@/APIHelpers'
 import { decode } from "base64-arraybuffer";
-import useSQLiteDB from './useSQLiteDB';
-import CaptionHistory from './components/CaptionHistory';
-import { useDarkMode } from './components/DarkModeContext'
+import useSQLiteDB from '@/useSQLiteDB';
+import CaptionHistory from '@/components/CaptionHistory';
+import { useDarkMode } from '@/components/DarkModeContext'
 
 
 const App: React.FC = () => {
