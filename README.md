@@ -9,7 +9,7 @@ App that provides a clean and fast interface to get captions for images, both of
 - Capacitor: for building the app.
 - @capacitor-community/sqlite: for storage of image/caption history.
 - @capacitor/camera: for taking pictures using device's camera or selecting images from gallery.
-- HuggingFace serverless API: to send a selected image as payload to a pre-trained image captioning model API, and receive a caption as a reply.
+- Hugging Face serverless API: to send a selected image as payload to a pre-trained image captioning model API, and receive a caption as a reply.
 - Monaca (optional): as an environment setup alternative.
 
 ## Running the app
